@@ -11,7 +11,7 @@ Enhancements
   (``infer_limits=True`` in :py:func:`pvlib.clearsky.detect_clearsky`),
   and accepts data at intervals of 1 to 30 minutes. The docstring now
   notes that the function can be applied to plane-of-array irradiance.
-  Results differ from previous versions. (:issue:`222`)
+  Results differ from previous versions. (:issue:`222`, :pull:`239`)
 
 Bug Fixes
 ~~~~~~~~~
@@ -32,7 +32,7 @@ Requirements
   - scikit-image: 0.19.0
 
 * Advance minimum pvlib to 0.13.1, which is needed for
-  :py:func:`pvanalytics.features.clearsky.reno`. (:issue:`222`)
+  :py:func:`pvanalytics.features.clearsky.reno`. (:issue:`222`, :pull:`239`)
 
 
 Documentation

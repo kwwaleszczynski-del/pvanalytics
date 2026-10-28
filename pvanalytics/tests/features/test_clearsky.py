@@ -1,6 +1,9 @@
 """Tests for feature labeling functions."""
 import pytest
+import numpy as np
 import pandas as pd
+from pandas.testing import assert_series_equal
+import pvlib
 from pvanalytics.features import clearsky
 
 
@@ -31,8 +34,36 @@ def test_reno_begining_end(quadratic):
 
 def test_reno_large_interval(quadratic):
     """clearsky.reno() raises ValueError if timestamp spacing too large."""
-    index = pd.date_range(start='04/03/2020', freq='20min',
+    index = pd.date_range(start='04/03/2020', freq='35min',
                           periods=len(quadratic))
     quadratic.index = index
     with pytest.raises(ValueError):
         clearsky.reno(quadratic, quadratic)
+
+
+def test_reno_small_interval(quadratic):
+    """clearsky.reno() raises ValueError if timestamp spacing too small."""
+    index = pd.date_range(start='04/03/2020', freq='30s',
+                          periods=len(quadratic))
+    quadratic.index = index
+    with pytest.raises(ValueError):
+        clearsky.reno(quadratic, quadratic)
+
+
+def test_reno_30min_interval(quadratic):
+    """clearsky.reno() accepts data at 30 minute intervals."""
+    index = pd.date_range(start='04/03/2020', freq='30min',
+                          periods=len(quadratic))
+    quadratic.index = index
+    assert clearsky.reno(quadratic, quadratic).all()
+
+
+def test_reno_infer_limits(quadratic):
+    """clearsky.reno() uses thresholds inferred from the data interval."""
+    index = pd.date_range(start='04/03/2020', freq='5min',
+                          periods=len(quadratic))
+    quadratic.index = index
+    ghi = quadratic * (1 + 0.03 * np.sin(np.arange(len(quadratic))))
+    expected = pvlib.clearsky.detect_clearsky(ghi, quadratic,
+                                              infer_limits=True)
+    assert_series_equal(clearsky.reno(ghi, quadratic), expected)
